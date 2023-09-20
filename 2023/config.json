@@ -1,0 +1,5 @@
+{
+    "DEFAULT_TEMPLATE_PATH": "./template.py",
+    "DEFAULT_LANGUAGE": ".py"
+  }
+  

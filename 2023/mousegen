@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Check if generate.py exists in the current directory
+if [[ -f "$(pwd)/generate.py" ]]; then
+    python3 "$(pwd)/generate.py" "$@"
+else
+    echo "Error: Not in a valid Codeforces directory with generate.py."
+    exit 1
+fi

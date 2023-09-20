@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# Get the directory of this script
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+# Determine which file to modify based on OS
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    FILE="$HOME/.bash_profile"
+else
+    # Linux/Unix
+    FILE="$HOME/.bashrc"
+fi
+
+# Check if the path entries already exist
+if ! grep -q "PATH.*$DIR/mousegen" "$FILE"; then
+    echo "export PATH=\"\$PATH:$DIR\"" >> "$FILE"
+    echo "Added path for mousegen and solved to $FILE"
+else
+    echo "Path for mousegen and solved already exists in $FILE"
+fi
+
+# Inform the user to restart the shell or source the file
+echo "Setup complete. Please restart your shell or run 'source $FILE' for the changes to take effect."
