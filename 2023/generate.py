@@ -50,6 +50,8 @@ def print_usage():
     print_usage_t()
     print('\n')
     print_usage_dt()
+    print('\n')
+    print_usage_o()
     print("\nFlags can be combined and used in any order.")
     print('\n')
 
@@ -98,6 +100,11 @@ def print_usage_dt():
     print("Usage for -dt flag (Default template):")
     print("  mousegen -dt <template_path>")
     print("  example: mousegen -dt template.py")
+
+def print_usage_o():
+    print("Usage for -o flag (Open Codeforces link):")
+    print("  mousegen -o <contest_number> <problem_letter>")
+    print("  example: mousegen -o 123 A")
 
 # Create a contest
 def create_contest(contest_num="CURR CONTEST", div=None, extend=False):
@@ -250,7 +257,31 @@ def handle_regular_problem(contest_identifier, problem_name, rating, current_lan
 
 def main():
     if "-h" in sys.argv:
-        print_usage()
+        if len(sys.argv) > 2:
+            switch = sys.argv[2]
+            if switch == "-c":
+                print_usage_c()
+            elif switch == "-n":
+                print_usage_n()
+            elif switch == "-r":
+                print_usage_r()
+            elif switch == "-k":
+                print_usage_k()
+            elif switch == "-l":
+                print_usage_l()
+            elif switch == "-dl":
+                print_usage_dl()
+            elif switch == "-t":
+                print_usage_t()
+            elif switch == "-dt":
+                print_usage_dt()
+            elif switch == "--all" or switch == "-a":
+                print_usage()
+            else:
+                print_usage()
+
+        else:
+            print_usage()
         sys.exit(0)
     # Initial setup
     global DEFAULT_TEMPLATE_PATH
@@ -325,14 +356,41 @@ def main():
 
         create_contest(contest_num, div, extend)
         return
+    
+    if "-o" in args:
+        # Opens codeforces link to a problem
+        # Ex. mousegen -o 123 A would open google the query "codeforces 123A", and access the first result
+        idx = args.index("-o")
+        if idx + 1 >= len(sys.argv) and not sys.argv[idx + 1].startswith('-'):
+            print_usage_o()
+            sys.exit(1)
+        contest_num = args[idx + 1]
+        letter = args[idx + 2] if idx + 2 < len(args) and not args[idx + 2].startswith("-") else None
+
+        if letter:
+            query = f"codeforces {contest_num}{letter}"
+        else:
+            query = f"codeforces {contest_num}"
+        
+        #Search AND access the first result on google
+        import webbrowser
+        from googlesearch import search
+        for j in search(query, tld="co.in", num=1, stop=1, pause=2):
+            webbrowser.open(j)
+        
+
+        return
+
 
 
     if "-n" in args:
         idx = args.index("-n")
-        
+      
         # Check if next argument after -n is a digit (contest number)
+
         if idx + 1 < len(args) and args[idx + 1].isdigit():
             contest_num = args[idx + 1]
+            os.chdir("Uncategorized")
             if contest_num == "CURR CONTEST" and not os.path.exists("CURR CONTEST"):
                 print("Error: 'CURR CONTEST' not found.")
                 sys.exit(1)
