@@ -9,6 +9,7 @@ input = sys.stdin.readline # Don't forget to rstrip()
 
 testcases = int(input())
 def solution():
+    n, x = map(int, input().split())
 
 
 for i in range(testcases):
