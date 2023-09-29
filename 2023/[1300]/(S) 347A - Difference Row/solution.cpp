@@ -30,22 +30,30 @@
 #include <climits>
 
 using namespace std;
-#pragma GCC optimize("Ofast")
-//#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
-#pragma GCC optimize("unroll-loops")
 
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define all(x) begin(x), end(x)
 #define sz(x) (int)(x).size()
-#define pb(x) push_back(x)
-
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> pii;
 typedef vector<int> vi;
 
 void solve(){
-    
+    int n;
+    cin >> n;
+    vector<int> nums;
+    for (int i = 0; i < n; i++){
+        int temp;
+        cin >> temp;
+        nums.push_back(temp);
+    }
+    sort(nums.begin(), nums.end());
+    swap(nums[0], nums[n-1]);
+    for (int num: nums){
+        cout << num << " ";
+    }
+    cout << endl;
 }
 
 int main(){

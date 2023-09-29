@@ -31,29 +31,26 @@ DEFAULT_LANGUAGE = conf.get("DEFAULT_LANGUAGE", ".py")
 DEFAULT_TEMPLATE_PATH =  conf.get("DEFAULT_TEMPLATE_PATH", "./template.py")
 
 def print_usage():
-    print("Usage:")
-    print('\n')
-    print_usage_default()
-    print('\n')
-    print_usage_c()
-    print('\n')
-    print_usage_n()
-    print('\n')
-    print_usage_r()
-    print('\n')
-    print_usage_k()
-    print('\n')
-    print_usage_l()
-    print('\n')
-    print_usage_dl()
-    print('\n')
-    print_usage_t()
-    print('\n')
-    print_usage_dt()
-    print('\n')
-    print_usage_o()
-    print("\nFlags can be combined and used in any order.")
-    print('\n')
+    print("""Usage: mousegen [options]
+Default:
+    mousegen <contest_identifier> <problem_name> <rating>
+    example: mousegen 123A \"Free Food\" 1500
+    Important: Include quotes around the problem name always.
+          
+Options:
+    -c [contest_number div] [-e]         : Create a contest directory.
+    -n [letter problem_name]             : Name a problem (within a contest).
+    -r rating -n [letter problem_name]   : Rate a problem (within a contest).
+    -r rating -n [contest_number div]    : Rate a problem (within a contest).
+    -k [letter problem_name month day]   : Create a Kattis problem directory.
+    -l .extension                        : Set the default language.
+    -dl .extension                       : Set the default language permanently.
+    -t <template_path>                   : Use a template for the solution file.
+    -dt <template_path>                  : Set the default template permanently.
+    -o <contest_number> <problem_letter> : Open Codeforces link.
+    -h, --help                           : Display this help message.
+    """)
+    
 
  
 def print_usage_default():
@@ -94,7 +91,7 @@ def print_usage_dl():
 def print_usage_t():
     print("Usage for -t flag (Specify a template):")
     print("  mousegen -t <template_path>")
-    print("  example: mousegen -t template.py")
+    print("  example: mousegen 123A \"Free Food\" 1500 -t template.py")
 
 def print_usage_dt():
     print("Usage for -dt flag (Default template):")
@@ -146,13 +143,36 @@ def create_contest(contest_num="CURR CONTEST", div=None, extend=False):
             os.chdir("..")
 
 # Name a problem
-def name_problem(letter, problem_name=None, contest_num=None, div=None):
-    # Check if renaming a problem within a contest
+def name_problem(letter, problem_name=None, contest_num=None, div=None, reset=False):
+    # Make sure that there is at least one argument
+    if not letter and not contest_num and not div and not problem_name:
+        print_usage_n()
+        sys.exit(1)
+    # TODO: Make sure current directory is Uncategorized
+    # if not os.path.exists("Uncategorized") and os.path.isdir("Uncategorized"):
+    #     sys.exit(1)
+    # elif os.path.exists("Uncategorized"):
+    #     os.chdir("Uncategorized")
+
+    if reset:
+        if not letter:
+            print("Error: Letter must be specified.")
+            sys.exit(1)
+        contest_dirs = sorted([d for d in os.listdir() if os.path.isdir(d)])
+        latest_contest = contest_dirs[-1]
+        problem_dir = f"{letter} - "
+        matching_dirs = [d for d in os.listdir(latest_contest) if d.startswith(problem_dir)]
+        if not matching_dirs:
+            print(f"Error: Problem {letter} in contest {latest_contest} either does not have a valid format or is already reset.")
+            sys.exit(1)
+        problem_dir = matching_dirs[0]
+        os.rename(os.path.join(latest_contest, problem_dir), os.path.join(latest_contest, f"{letter}"))
+        return
+
     if letter and problem_name:
         # Find the latest contest directory
         contest_dirs = sorted([d for d in os.listdir() if os.path.isdir(d)])
         latest_contest = contest_dirs[-1]
-        
         if not problem_name:
             # Expect the problem to have a format like "123A - Problem Name"
             problem_dir = f"{latest_contest}{letter} - "
@@ -164,11 +184,20 @@ def name_problem(letter, problem_name=None, contest_num=None, div=None):
         else:
             old_dir = os.path.join(latest_contest, letter)
             new_dir = os.path.join(latest_contest, f"{letter} - {problem_name}")
-            if os.path.exists(old_dir):
+            # If we find the letter in our path
+            if os.path.exists(old_dir) or letter in os.listdir(latest_contest):
+                # Make sure our old_dir is a valid directory that contains the letter
+                if not os.path.exists(old_dir):
+                    old_dir = os.path.join(latest_contest, [d for d in os.listdir(latest_contest) if d.startswith(letter)][0])
                 os.rename(old_dir, new_dir)
             else:
-                print(f"Error: Directory {old_dir} does not exist.")
-                sys.exit(1)
+                if not os.path.exists(old_dir):
+                    old_dir = os.path.join(latest_contest, [d for d in os.listdir(latest_contest) if d.startswith(letter)][0])
+                if os.path.exists(old_dir):
+                    os.rename(old_dir, new_dir)
+                else:
+                    print(f"Error: Directory {old_dir} does not exist.")
+                    sys.exit(1)
 
     # Check if renaming a contest
     elif contest_num and div:
@@ -231,6 +260,10 @@ def handle_kattis_problem(letter, problem_name, month, day, current_language, us
             print(template.read())
             with open(solution_file_name, "w") as solution:
                 solution.write(template.read())
+    
+    # Create the testcase file
+    with open("testcase.txt", "w") as _:
+        pass
 
 def handle_regular_problem(contest_identifier, problem_name, rating, current_language, use_template, template_path):
     # Enter the directory based on rating
@@ -243,6 +276,9 @@ def handle_regular_problem(contest_identifier, problem_name, rating, current_lan
     folder_name = f"{contest_identifier} - {problem_name}"
     if not os.path.exists(folder_name):
         os.mkdir(folder_name)
+    else:
+        print("Error: Problem already exists.")
+        sys.exit(1)
     os.chdir(folder_name)
 
     solution_file_name = "solution" + current_language
@@ -254,11 +290,33 @@ def handle_regular_problem(contest_identifier, problem_name, rating, current_lan
         with open(template_path, "r") as template:
             with open(solution_file_name, "w") as solution:
                 solution.write(template.read())
+    
+    # Create the testcase file
+    with open("testcase.txt", "w") as _:
+        pass
+def enter_directory(directory):
+    if not os.path.exists(directory):
+        print(f"Error: Directory {directory} does not exist.")
+        sys.exit(1)
+    os.chdir(directory)
+
+
 
 def main():
     if "-h" in sys.argv:
-        if len(sys.argv) > 2:
-            switch = sys.argv[2]
+        if len(sys.argv) >= 2:
+            switch = sys.argv[1]
+            if len(sys.argv) >= 3:
+                # Print usage of the leftmost non -h flag
+                for i in range(1, len(sys.argv)):
+                    if sys.argv[i] == "-h":
+                        continue
+                    else:
+                        switch = sys.argv[i]
+                        break
+               
+
+
             if switch == "-c":
                 print_usage_c()
             elif switch == "-n":
@@ -275,6 +333,8 @@ def main():
                 print_usage_t()
             elif switch == "-dt":
                 print_usage_dt()
+            elif switch == "-o":
+                print_usage_o()
             elif switch == "--all" or switch == "-a":
                 print_usage()
             else:
@@ -301,7 +361,7 @@ def main():
 
     if "-l" in args:
         idx = args.index("-l")
-        if idx + 1 >= len(sys.argv) or sys.argv[idx + 1].startswith('-'):
+        if idx + 1 >= len(args) or args[idx + 1].startswith('-'):
             print_usage_l()
             sys.exit(1)
         current_language = args.pop(idx + 1)
@@ -309,7 +369,7 @@ def main():
 
     if "-dl" in args:
         idx = args.index("-dl")
-        if idx + 1 >= len(sys.argv) or sys.argv[idx + 1].startswith('-'):
+        if idx + 1 >= len(args) or args[idx + 1].startswith('-'):
             print_usage_dl()
             sys.exit(1)
         new_default_language = args.pop(idx + 1)
@@ -317,7 +377,7 @@ def main():
         with open('config.json', 'w') as file:
             json.dump(conf, file, indent=4)
         args.pop(idx)
-    # Check for -dt flag
+
     if "-dt" in args:
         idx = args.index("-dt")
         if idx + 1 < len(args) and not args[idx + 1].startswith("-"):
@@ -329,15 +389,26 @@ def main():
         save_config()
         args.pop(idx)
 
-    # Check for -t flag
+
     if "-t" in args:
         idx = args.index("-t")
         if idx + 1 < len(args) and not args[idx + 1].startswith("-"):
             template_path = args.pop(idx + 1)
+            if template_path.startswith("./"):
+                template_path = template_path[2:]
+                template_path = os.path.join(os.getcwd(), template_path)
+            if not os.path.exists(template_path):
+                print(f"Error: Template {template_path} does not exist.")
+                sys.exit(1)
             use_template = True
         else:
-            print_usage_t()
-            sys.exit(1)
+            # Check if we have a default template and make sure it isn't empty
+            if not DEFAULT_TEMPLATE_PATH and not os.path.exists(DEFAULT_TEMPLATE_PATH) and os.path.getsize(DEFAULT_TEMPLATE_PATH) >= 0:
+                print("Error: No default template found.")
+                print_usage_dt()
+                print_usage_t()
+                sys.exit(1)
+            template_path = DEFAULT_TEMPLATE_PATH
         args.pop(idx)
 
     if "-c" in args:
@@ -359,26 +430,24 @@ def main():
     
     if "-o" in args:
         # Opens codeforces link to a problem
-        # Ex. mousegen -o 123 A would open google the query "codeforces 123A", and access the first result
+        # Ex1. mousegen -o "Problem Name" would open google the query "codeforces Problem Name", and access the first result
+        # Ex2. mousegen -o 123 A would open the link https://codeforces.com/problemset/problem/123/A
         idx = args.index("-o")
         if idx + 1 >= len(sys.argv) and not sys.argv[idx + 1].startswith('-'):
             print_usage_o()
             sys.exit(1)
-        contest_num = args[idx + 1]
-        letter = args[idx + 2] if idx + 2 < len(args) and not args[idx + 2].startswith("-") else None
-
-        if letter:
-            query = f"codeforces {contest_num}{letter}"
+            
+        if idx + 1 < len(args) and args[idx + 1].isdigit():
+            contest_num = args[idx + 1]
+            letter = args[idx + 2] if idx + 2 < len(args) and not args[idx + 2].startswith("-") else None
         else:
-            query = f"codeforces {contest_num}"
-        
-        #Search AND access the first result on google
-        import webbrowser
-        from googlesearch import search
-        for j in search(query, tld="co.in", num=1, stop=1, pause=2):
-            webbrowser.open(j)
-        
+            problem_name = args[idx + 1] if idx + 2 < len(args) and not args[idx + 2].startswith("-") else None
 
+        
+        if letter:
+            os.system(f"open https://codeforces.com/problemset/problem/{contest_num}/{letter}")
+        elif problem_name:
+            os.system(f"open https://www.google.com/search?q=codeforces+{problem_name}")
         return
 
 
@@ -387,7 +456,12 @@ def main():
         idx = args.index("-n")
       
         # Check if next argument after -n is a digit (contest number)
-
+        if "--reset" in args:
+            letter = args[idx + 1] if idx + 1 < len(args) and not args[idx + 1].startswith("-") else None
+            idx = args.index("--reset")
+            args.pop(idx)
+            name_problem(letter, reset=True)
+            return
         if idx + 1 < len(args) and args[idx + 1].isdigit():
             contest_num = args[idx + 1]
             os.chdir("Uncategorized")
@@ -424,12 +498,17 @@ def main():
         letter, problem_name, month, day = args[1:5]
         handle_kattis_problem(letter, problem_name, month, day, current_language, use_template, template_path)
     else:
-        if len(args) < 3:
+        if len(args) < 3 or len(args) > 4:
             print_usage_default()
             sys.exit(1)
         contest_identifier, problem_name, rating = args[:3]
+        if not rating.isdigit() and len(args) == 3:
+            print("Error: Rating must be a number.")
+            sys.exit(1)
+        elif not rating.isdigit():
+            print_usage_default()
+            sys.exit(1)
         handle_regular_problem(contest_identifier, problem_name, rating, current_language, use_template, template_path)
-
 
    
 

@@ -7,7 +7,8 @@ import collections
 
 input = sys.stdin.readline # Don't forget to rstrip()
 
-testcases = int(input())
+testcases = 1
+# testcases = int(input())
 def solution():
 
 

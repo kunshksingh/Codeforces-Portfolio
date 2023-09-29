@@ -30,21 +30,25 @@
 #include <climits>
 
 using namespace std;
-#pragma GCC optimize("Ofast")
-//#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
-#pragma GCC optimize("unroll-loops")
 
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define all(x) begin(x), end(x)
 #define sz(x) (int)(x).size()
-#define pb(x) push_back(x)
-
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> pii;
 typedef vector<int> vi;
 
 void solve(){
+    int s,d,k;
+    cin >> s >> d >> k;
+    int buns = 2 * (s+d);
+    int patties = s + 2*d;
+    if (buns >= k + 1 && patties >= k) {
+        cout << "YES" << endl;
+    } else{
+        cout << "NO" << endl;
+    }
     
 }
 
@@ -53,10 +57,10 @@ int main(){
     cin.tie(NULL);
     cout<<setprecision(15)<<fixed;
     int t=1;
-    // cin >> t;
+    cin >> t;
     for (int c = 0; c < t; c++)
     {   
-        // cout<<"Case #"<<c+1<<": ";
+        cout<<"Case #"<<c+1<<": ";
         solve();
     }
 }

@@ -29,15 +29,18 @@
 #include <random>
 #include <climits>
 
-using namespace std;
 #pragma GCC optimize("Ofast")
 //#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #pragma GCC optimize("unroll-loops")
 
+using namespace std;
+
 #define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define all(x) begin(x), end(x)
 #define sz(x) (int)(x).size()
-#define pb(x) push_back(x)
+#define pb push_back
+#define F first
+#define S second
 
 typedef long long ll;
 typedef long double ld;
@@ -45,7 +48,36 @@ typedef pair<int, int> pii;
 typedef vector<int> vi;
 
 void solve(){
+    int n; 
+    cin >> n;
+    string init;
+    cin >> init;
+    int maxlights = 0;
+    vector<int> light_status;
+    rep(i, 0, n) light_status.push_back((int) (init[i] - '0'));
     
+
+    vector<pii> lights;
+    for (int i = 0; i < n; i++){
+        int ai, bi;
+        cin >> bi >> ai;
+        lights.push_back(make_pair(ai,bi));
+    }
+    for (int i = 0; i < 2521; i++){ // 2520 is the lcm of 1-10
+        int mycount = count(light_status.begin(), light_status.end(),1);
+        maxlights = max(maxlights, mycount);
+        for (int j = 0; j < n; j++){    
+            if (i >= lights[j].first && (i- lights[j].first) % lights[j].second == 0){
+                if (light_status[j] == 0){
+                    light_status[j] = 1;
+                }
+                else{
+                    light_status[j] = 0;
+                }
+            }
+        }
+    }
+    cout << maxlights << endl;
 }
 
 int main(){
