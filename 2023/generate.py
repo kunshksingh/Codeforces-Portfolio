@@ -38,9 +38,9 @@ Default:
     Important: Include quotes around the problem name always.
           
 Options:
-    -c [contest_number div] [-e]         : Create a contest directory.
+    -c [contest_number div] [-e]         : Create or reference contest directory.
     -n [letter problem_name]             : Name a problem (within a contest).
-    -r <rating>                          : Rate a problem.
+    -n [contest_number div]              : Name a contest.
     -k [letter problem_name month day]   : Create a Kattis problem directory.
     -l <.extension>                      : Set the current language.
     -dl <.extension>                     : Set the default language permanently.
@@ -50,7 +50,6 @@ Options:
     -m <file_name>                       : Move an existing solution to a problem directory
     -h, --help                           : Display this help message.
     """)
-    
 
  
 def print_usage_default():
@@ -62,18 +61,15 @@ def print_usage_c():
     print("Usage for -c flag (Contests):")
     print("  mousegen -c [contest_number div] [-e]")
     print("    -e: Extend the contest by adding the next problem.")
-    print("  example: mousegen -c 123 2")
+    print("  example: mousegen -c 123 2 -e")
+    print("")
+    print("  Can be combined with default usage (no flags) to move a problem to the current contest.")
+    print("  example: mousegen 123A \"Free Food\" 1500 -c 123 2")
 
 def print_usage_n():
     print("Usage for -n flag (Naming):")
     print("  mousegen -n [letter problem_name] OR mousegen -n [contest_number div]")
     print("  example: mousegen -n A - \"Free Food\" OR mousegen -n 123 2")
-
-def print_usage_r():
-    print("Usage for -r flag (Rating):")
-    print("  mousegen -r rating -n <letter> [problem_name] OR mousegen -r rating <letter>")
-    print("  example: mousegen -r 1500 -n A - \"Free Food\" OR mousegen -r 1500 A")
-    print("  Note: The -n flag is optional if the problem is already named.")
 
 def print_usage_k():
     print("Usage for -k flag (Kattis problems):")
@@ -218,29 +214,8 @@ def name_problem(letter, problem_name=None, contest_num=None, div=None, reset=Fa
         print("Error: Insufficient information provided to name the problem or contest.")
         sys.exit(1)
 
-    # The rest of the functions...
-def rate_problem(rating, letter, problem_name=None):
-    # Find the latest contest directory
-    contest_dirs = sorted([d for d in os.listdir() if os.path.isdir(d)])
-    latest_contest = contest_dirs[-1]
-
-    if not problem_name:
-        # Expect the problem to have a format like "123A - Problem Name"
-        problem_dir = f"{latest_contest}{letter} - "
-        matching_dirs = [d for d in os.listdir(latest_contest) if d.startswith(problem_dir)]
-        if not matching_dirs:
-            print(f"Error: Problem {letter} in contest {latest_contest} does not have a valid format.")
-            sys.exit(1)
-        problem_dir = matching_dirs[0]
-    else:
-        problem_dir = f"{latest_contest}{letter} - {problem_name}"
-
-    rating_dir = f"[{rating}]"
-    if not os.path.exists(rating_dir):
-        os.mkdir(rating_dir)
-
     # Move the problem to the rating directory and rename it
-    os.rename(os.path.join(latest_contest, problem_dir), os.path.join(rating_dir, problem_dir))
+    # os.rename(os.path.join(latest_contest, problem_dir), os.path.join(rating_dir, problem_dir))
 
 def handle_kattis_problem(letter, problem_name, month, day, current_language, use_template, template_path):
     # Enter the Kattis directory based on the date
@@ -338,8 +313,6 @@ def main():
                 print_usage_c()
             elif switch == "-n":
                 print_usage_n()
-            elif switch == "-r":
-                print_usage_r()
             elif switch == "-k":
                 print_usage_k()
             elif switch == "-l":
@@ -439,10 +412,51 @@ def main():
         contest_num = "CURR CONTEST"
         div = None
 
-        if idx + 1 < len(args) and not args[idx + 1].startswith("-"):
-            contest_num = args.pop(idx + 1)
-            if idx + 1 < len(args) and not args[idx + 1].startswith("-"):
-                div = args.pop(idx + 1)
+        if idx + 1 < len(args) and args[idx + 1].isdigit():
+            contest_num = args[idx + 1]
+            div = args[idx + 2] if idx + 2 < len(args) else None
+        if len(args) >= 4:
+            # Move a problem in a contest to a newly created problem directory by default usage
+            contest_identifier, problem_name, rating = args[:3]
+            if not rating.isdigit():
+                print_usage_default()
+                sys.exit(1)
+            args = args[3:]
+            # Access associated problem letter in contest directory
+            if not div:
+                contest_dir = os.path.join("Uncategorized", contest_num)
+            else:
+                contest_dir = os.path.join("Uncategorized", f"{contest_num} (div {div})")
+            if not os.path.exists(contest_dir):
+                if not div:
+                    print(f"Error: No current contest found.")
+                else:
+                    print(f"Error: Contest {contest_num} (div {div}) does not exist.")
+                sys.exit(1)
+            file_name = os.path.join(contest_dir, contest_identifier[-1], f"solution{DEFAULT_LANGUAGE_PATH}")
+            if not os.path.exists(file_name):
+                file_name = os.path.join(contest_dir, contest_identifier[-1], f"solution{new_default_language}")
+            if not os.path.exists(file_name):
+                file_name = os.path.join(contest_dir, f"{contest_identifier} - {problem_name}", f"solution{DEFAULT_LANGUAGE_PATH}")
+            if not os.path.exists(file_name):
+                file_name = os.path.join(contest_dir, f"{contest_identifier} - {problem_name}", f"solution{new_default_language}")
+            if not os.path.exists(file_name):
+                if not div:
+                    print(f"Error: Problem {contest_identifier[-1]} in current contest does not exist.")
+                else:
+                    print(f"Error: Problem {contest_identifier[-1]} in contest {contest_num} (div {div}) does not exist.")
+                sys.exit(1)
+            file_name = os.path.abspath(file_name)
+            handle_regular_problem(contest_identifier, problem_name, rating, current_language, use_template, template_path, file_name)
+            # Remove the problem from the contest directory
+            os.remove('/'.join(file_name.split("/")[:-1:])+"/testcase.txt")
+            os.rmdir('/'.join(file_name.split("/")[:-1:])+"/")
+            return
+        elif len(args) > 2:
+            print_usage_c()
+            sys.exit(1)
+
+
 
         create_contest(contest_num, div, extend)
         return
@@ -493,17 +507,6 @@ def main():
             letter = args[idx + 1] if idx + 1 < len(args) and not args[idx + 1].startswith("-") else None
             problem_name = args[idx + 2] if idx + 2 < len(args) and not args[idx + 2].startswith("-") else None
             name_problem(letter, problem_name)
-        return
-
-    if "-r" in args and "-n" in args:
-        idx = args.index("-r")
-        if idx + 1 >= len(sys.argv) or sys.argv[idx + 1].startswith('-'):
-            print_usage_r()
-            sys.exit(1)
-        rating = args[idx + 1]
-        letter = args[idx + 2] if idx + 2 < len(args) and not args[idx + 2].startswith("-") else None
-        problem_name = args[idx + 3] if idx + 3 < len(args) and not args[idx + 3].startswith("-") else None
-        rate_problem(rating, letter, problem_name)
         return
 
     if "-m" in args:
