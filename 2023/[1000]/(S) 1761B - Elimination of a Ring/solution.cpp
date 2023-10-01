@@ -50,14 +50,40 @@ typedef vector<int> vi;
 typedef vector<ll> vl;
 
 void solve(){
+    int n;
+    cin >> n;
+    vi nums(n);
+    rep(0, n) cin >> nums[i];
+
+    int j = 0;
+    while(j < n){
+        if (nums[j] == nums[j-1]){
+            nums.erase(nums.begin()+j);
+            n -= 1;
+        }
+        else j += 1;
+    }
+    while (n > 1 && nums[0] == nums[n-1]){
+        nums.pop_back();
+        n -= 1;
+    }
+    int counter = n;
+    set<int> vals;
+    rep2(n){
+        vals.insert(nums[i]);
+    }
+    if (vals.size() == 2 && nums.size() > 3) counter = (counter/2) + 1;
     
+        
+    cout << counter << endl;
 }
+
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout<<setprecision(15)<<fixed;
     int t=1;
-    // cin >> t;
+    cin >> t;
     for (int c = 0; c < t; c++)
     {   
         // cout<<"Case #"<<c+1<<": ";

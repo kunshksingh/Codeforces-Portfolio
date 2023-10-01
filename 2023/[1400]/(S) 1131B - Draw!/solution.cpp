@@ -50,8 +50,32 @@ typedef vector<int> vi;
 typedef vector<ll> vl;
 
 void solve(){
+    ll n;
+    cin >> n;
+    vl a(n+1), b(n+1);
+    a.pb(0);
+    b.pb(0);
+    rep(1,n+1) cin >> a[i] >> b[i];
+    ll draws = 1;
+
+    rep(1,n+1){
+        if (((a[i] == a[i-1])) && ( b[i] == b[i-1])) continue;
     
+        draws += max(min(a[i],b[i])-max(a[i-1],b[i-1])+1,0LL);
+        
+        if (a[i-1] == b[i-1]){
+            draws--;
+        }
+    
+    
+        // cout << "Draws: " << draws << endl;
+        // cout << "Game #" << i << " : " << a[i] << " "<< b[i]<< endl;
+    }
+    // if (a[n] == b[n] && a[n] != 0) draws++;
+    println(draws)
+
 }
+
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);

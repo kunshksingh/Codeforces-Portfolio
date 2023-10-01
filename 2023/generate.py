@@ -40,14 +40,14 @@ Default:
 Options:
     -c [contest_number div] [-e]         : Create a contest directory.
     -n [letter problem_name]             : Name a problem (within a contest).
-    -r rating -n [letter problem_name]   : Rate a problem (within a contest).
-    -r rating -n [contest_number div]    : Rate a problem (within a contest).
+    -r <rating>                          : Rate a problem.
     -k [letter problem_name month day]   : Create a Kattis problem directory.
-    -l .extension                        : Set the default language.
-    -dl .extension                       : Set the default language permanently.
+    -l <.extension>                      : Set the current language.
+    -dl <.extension>                     : Set the default language permanently.
     -t <template_path>                   : Use a template for the solution file.
     -dt <template_path>                  : Set the default template permanently.
     -o <contest_number> <problem_letter> : Open Codeforces link.
+    -m <file_name>                       : Move an existing solution to a problem directory
     -h, --help                           : Display this help message.
     """)
     
@@ -66,13 +66,14 @@ def print_usage_c():
 
 def print_usage_n():
     print("Usage for -n flag (Naming):")
-    print("  mousegen -n [letter problem_name]")
+    print("  mousegen -n [letter problem_name] OR mousegen -n [contest_number div]")
     print("  example: mousegen -n A - \"Free Food\" OR mousegen -n 123 2")
 
 def print_usage_r():
     print("Usage for -r flag (Rating):")
-    print("  mousegen -r rating -n [letter problem_name] OR mousegen -r rating -n [contest_number div]")
-    print("  example: mousegen -r 1500 -n A - \"Free Food\" OR mousegen -r 1500 -n 123 2")
+    print("  mousegen -r rating -n <letter> [problem_name] OR mousegen -r rating <letter>")
+    print("  example: mousegen -r 1500 -n A - \"Free Food\" OR mousegen -r 1500 A")
+    print("  Note: The -n flag is optional if the problem is already named.")
 
 def print_usage_k():
     print("Usage for -k flag (Kattis problems):")
@@ -102,6 +103,11 @@ def print_usage_o():
     print("Usage for -o flag (Open Codeforces link):")
     print("  mousegen -o <contest_number> <problem_letter>")
     print("  example: mousegen -o 123 A")
+
+def print_usage_m():
+    print("Usage for -m flag (Move problem to rating directory):")
+    print("  mousegen -m <file_name>")
+    print("  example: mousegen 123A \"Free Food\" 1500 -m solution.py")
 
 # Create a contest
 def create_contest(contest_num="CURR CONTEST", div=None, extend=False):
@@ -265,7 +271,7 @@ def handle_kattis_problem(letter, problem_name, month, day, current_language, us
     with open("testcase.txt", "w") as _:
         pass
 
-def handle_regular_problem(contest_identifier, problem_name, rating, current_language, use_template, template_path):
+def handle_regular_problem(contest_identifier, problem_name, rating, current_language, use_template, template_path, file_name):
     # Enter the directory based on rating
     rating_dir = f"[{rating}]"
     if not os.path.exists(rating_dir):
@@ -280,26 +286,37 @@ def handle_regular_problem(contest_identifier, problem_name, rating, current_lan
         print("Error: Problem already exists.")
         sys.exit(1)
     os.chdir(folder_name)
+    
 
+        
     solution_file_name = "solution" + current_language
 
     # Create the solution file
     with open(solution_file_name, "w") as _:
         pass
-    if use_template:
+    if use_template and file_name:
+        print("Error: Cannot use both -t and -m flags.")
+        sys.exit(1)
+    elif use_template:
         with open(template_path, "r") as template:
             with open(solution_file_name, "w") as solution:
                 solution.write(template.read())
+    elif file_name:
+        #Copy contents of file_name into solution and delete file_name
+        with open(file_name, "r") as file:
+            with open(solution_file_name, "w") as solution:
+                solution.write(file.read())
+        os.remove(file_name)
     
     # Create the testcase file
     with open("testcase.txt", "w") as _:
         pass
+
 def enter_directory(directory):
     if not os.path.exists(directory):
         print(f"Error: Directory {directory} does not exist.")
         sys.exit(1)
     os.chdir(directory)
-
 
 
 def main():
@@ -335,6 +352,8 @@ def main():
                 print_usage_dt()
             elif switch == "-o":
                 print_usage_o()
+            elif switch == "-m":    
+                print_usage_m()
             elif switch == "--all" or switch == "-a":
                 print_usage()
             else:
@@ -355,7 +374,7 @@ def main():
     current_language = DEFAULT_LANGUAGE
     use_template = False
     template_path = DEFAULT_TEMPLATE_PATH
-
+    file_name = None
     # Parse flags
     args = sys.argv[1:]
 
@@ -487,6 +506,19 @@ def main():
         rate_problem(rating, letter, problem_name)
         return
 
+    if "-m" in args:
+        idx = args.index("-m")
+        if idx + 1 >= len(args) or args[idx + 1].startswith('-'):
+            print_usage_m()
+            sys.exit(1)
+        file_name = args[idx + 1]
+        if not os.path.exists(file_name):
+            print(f"Error: File {file_name} does not exist.")
+            sys.exit(1)
+        # Get absolute path
+        file_name = os.path.abspath(file_name)
+        args.pop(idx + 1)
+        args.pop(idx)
     # Handling Kattis and regular problems
     is_kattis = "-k" in args
   
@@ -498,7 +530,8 @@ def main():
         letter, problem_name, month, day = args[1:5]
         handle_kattis_problem(letter, problem_name, month, day, current_language, use_template, template_path)
     else:
-        if len(args) < 3 or len(args) > 4:
+
+        if len(args) < 3:
             print_usage_default()
             sys.exit(1)
         contest_identifier, problem_name, rating = args[:3]
@@ -508,7 +541,8 @@ def main():
         elif not rating.isdigit():
             print_usage_default()
             sys.exit(1)
-        handle_regular_problem(contest_identifier, problem_name, rating, current_language, use_template, template_path)
+
+        handle_regular_problem(contest_identifier, problem_name, rating, current_language, use_template, template_path, file_name)
 
    
 

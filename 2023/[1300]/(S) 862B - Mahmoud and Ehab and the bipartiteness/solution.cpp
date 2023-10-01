@@ -34,24 +34,50 @@ using namespace std;
 //#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #pragma GCC optimize("unroll-loops")
 
-#define rep(a, b) for(int i = a; i < (b); ++i)
-#define rep2(b) for(int i = 0; i < (b); ++i)
+#define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define all(x) begin(x), end(x)
 #define sz(x) (int)(x).size()
 #define pb(x) push_back(x)
-
-#define println(x) cout << x << endl;
-#define print(x) cout << x << " ";
 
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> pii;
 typedef vector<int> vi;
-typedef vector<ll> vl;
+
+const int MAX_N = 1e5 + 5;
+int vis[MAX_N];
+ll color;
+
+vector<int> adj[MAX_N];
+void dfs(int u, int c) {
+    vis[u] = 1;
+    c = !c;
+
+    if (c == 1){
+        color += 1;
+    }
+    for (int v : adj[u]) {
+        if (vis[v]) continue;
+        dfs(v, c);
+    }
+}
+
+
 
 void solve(){
-    
+    ll n;
+    cin >> n;
+    rep(i, 0, n-1) {
+        int a, b;
+        cin >> a >> b;
+        adj[a].push_back(b);
+        adj[b].push_back(a);
+    }
+
+    dfs(1,0);;
+    cout << (color) * (n-color) - (n-1) << endl;
 }
+
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);

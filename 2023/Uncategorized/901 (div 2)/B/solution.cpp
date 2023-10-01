@@ -44,54 +44,48 @@ typedef long double ld;
 typedef pair<int, int> pii;
 typedef vector<int> vi;
 
-
 void solve(){
-    int n;
-    cin >> n;
+    ll n,m,k;
+    vector<ll> jellyApples;
+    vector<ll> gellyApples;
+ 
     ll val;
-    vector<ll> nums;
-    nums.pb(-10e17);
-    rep(i, 0, n) {
+    cin >> n >> m >> k;
+    for (ll i = 0; i < n; i++ ){
         cin >> val;
-        nums.pb(val);
+        jellyApples.pb(val);
     }
-    ll inc;
-    rep(i, 1, n+1){
-    //         rep(j, 0, n+1){
-    //         cout << nums[j] << " ";
-    //     }
-    //  cout << endl;
-        if (n%2 == 1){
-            if (i >= 1){
-                // cout << "LESS" << endl;
-                    inc = (-1* (nums[i-1] - nums[i-2]));
-                    nums[i-1] += inc;
-                    nums[i] += inc;
+    for (ll i = 0; i < m; i++ ){
+        cin >> val;
+        gellyApples.pb(val);
+    }
+    sort(gellyApples.begin(), gellyApples.end());
+    sort(jellyApples.begin(), jellyApples.end());
+    int start = 1;
+    if (k % 2 == 0 && k > 500){
+        start = k-201;
+    } else if (k > 500){
+        start = k-202;
+    }
+    for (ll i = start; i < k+1; i ++){
+        if (i % 2 == 0) {
+            if (jellyApples[n-1] > gellyApples[0]){
+                swap(jellyApples[n-1],gellyApples[0]);
             }
+            sort(gellyApples.begin(), gellyApples.end());
+            sort(jellyApples.begin(), jellyApples.end());
         }
         else{
-            if((nums[i] < nums[i-1]) && i + 1 < n+1 ){
-                    inc = (nums[i-1] - nums[i]);
-                    nums[i+1] += inc;
-                    nums[i] += inc;
-                }
-
-        }
-   
-    }
-    // rep(j, 0, n+1){
-    //     cout << nums[j] << " ";
-    // }
-    // cout << endl;
-    
-    rep(i, 1, n){
-         if (nums[i] > nums[i+1]){
-
-                cout << "NO" << endl;
-                return;
+            if (jellyApples[0] < gellyApples[m-1]){
+                swap(jellyApples[0],gellyApples[m-1]);
             }
+            sort(gellyApples.begin(), gellyApples.end());
+            sort(jellyApples.begin(), jellyApples.end());
+        }
     }
-    cout << "YES" << endl;
+    ll summation = 0;
+    for (ll i = 0; i < n; i++) summation += jellyApples[i];
+    cout << summation << endl;
 }
 
 int main(){

@@ -34,30 +34,44 @@ using namespace std;
 //#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
 #pragma GCC optimize("unroll-loops")
 
-#define rep(a, b) for(int i = a; i < (b); ++i)
-#define rep2(b) for(int i = 0; i < (b); ++i)
+#define rep(i, a, b) for(int i = a; i < (b); ++i)
 #define all(x) begin(x), end(x)
 #define sz(x) (int)(x).size()
 #define pb(x) push_back(x)
-
-#define println(x) cout << x << endl;
-#define print(x) cout << x << " ";
 
 typedef long long ll;
 typedef long double ld;
 typedef pair<int, int> pii;
 typedef vector<int> vi;
-typedef vector<ll> vl;
 
 void solve(){
-    
+    int a,b,n;
+    cin >> a >> b >> n;
+    vector<int> tools;
+
+    for (int i = 0; i < n; i++){
+        int val = 0;
+        cin >> val;
+        tools.pb(val);
+    }
+    sort(tools.begin(), tools.end());
+    ll time = b;
+    ll t = b;
+    int i = 0;
+    for (int i = 0; i < n; i++){
+        int xi = 1+tools[i];
+        time = min(xi,a);
+        t += (time-1);
+    }
+    cout << t << endl;
 }
+
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout<<setprecision(15)<<fixed;
     int t=1;
-    // cin >> t;
+    cin >> t;
     for (int c = 0; c < t; c++)
     {   
         // cout<<"Case #"<<c+1<<": ";
