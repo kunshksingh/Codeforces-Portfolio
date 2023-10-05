@@ -1,4 +1,4 @@
 {
     "DEFAULT_TEMPLATE_PATH": "./template",
-    "DEFAULT_LANGUAGE": ".py"
+    "DEFAULT_LANGUAGE": ".cpp"
 }
