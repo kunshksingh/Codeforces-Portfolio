@@ -41,7 +41,7 @@ struct modint{
     modint& operator-=(const modint& other){
         val -= other.val;
         if(val < 0) val += MOD;
-        returnthis;
+        return this;
     }
     modint& operator=(const modint& other){
         val = (int)((1LL val * other.val) % MOD);
@@ -50,7 +50,7 @@ struct modint{
     modint& operator++(){
         val++;
         if(val == MOD) val = 0;
-        returnthis;
+        return this;
     }
     modint& operator--(){
         if(val == 0) val = MOD;
@@ -69,7 +69,7 @@ struct modint{
 
     friend modint operator+(modint a, const modint& b){return a += b;}
     friend modint operator-(modint a, const modint& b){return a -= b;}
-    friend modint operator(modint a, const modint& b){return a *= b;}
+    friend modint operator*(modint a, const modint& b){return a *= b;}
     friend modint operator/(modint a, const modint& b){return a /= b;}
     friend modint operator++(modint& a, int){modint r = a; ++a; return r;}
     friend modint operator--(modint& a, int){modint r = a; --a; return r;}
@@ -231,4 +231,17 @@ NTT<int, prime, root, 18> ntt;
 //       fftMod<li, 1000000523862017, -1, 26> // g = 3
 //       fftMod<li, 1000000000949747713, -1, 26> // g = 2
 //       fftMod<li, -1, li(1e13), 20>
+
+
+
+MAX IN DICT
+
+template<typename KeyType, typename ValueType> 
+std::pair<KeyType,ValueType> get_max( const std::map<KeyType,ValueType>& x ) {
+  using pairtype=std::pair<KeyType,ValueType>; 
+  return *std::max_element(x.begin(), x.end(), [] (const pairtype & p1, const pairtype & p2) {
+        return p1.first < p2.first;
+  }); 
+}
+
 */
