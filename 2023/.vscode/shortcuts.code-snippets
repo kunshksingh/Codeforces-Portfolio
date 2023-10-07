@@ -146,7 +146,7 @@
 			"#define pb(x) push_back(x)",
 			"",
 			"#define println(x) cout << x << endl;",
-			"#define print(x) cout << x << " ";",
+			"#define print(x) cout << x << \" \";",
 			"",
 			"typedef long long ll;",
 			"typedef long double ld;",
