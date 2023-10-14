@@ -48,20 +48,55 @@ typedef long double ld;
 typedef pair<int, int> pii;
 typedef vector<int> vi;
 typedef vector<ll> vl;
-
 const int MAXA = 1e7;
 vector<int> mind(MAXA+1);
 vector<int> primes;
 
 void solve(){
-    
+    int n;
+    cin >> n;
+    vector<short> a(n);
+    rep2(n) cin >> a[i];
+    unordered_set<short> sums;
+    unordered_set<short> sums2;
+    unordered_set<short> indexes;
+    short counter = 0;
+    short summation, j;
+
+    rep(2,n){
+        summation = a[i-1];
+        j = i-2;
+        while (j >= 0){
+            summation += a[j];
+            if (summation > 8000) break;
+            sums.insert(summation);
+            j--;
+        }
+        if (sums.find(a[i]) != sums.end()) indexes.insert(i);
+    }
+    short summation2;
+    short counter2 = 0;
+    reverse(a.begin(),a.end());
+    rep(2,n){
+        summation2 = a[i-1];
+        j = i-2;
+        while (j >= 0){
+            summation2 += a[j];
+            if (summation2 > 8000) break;
+            sums2.insert(summation2);
+            j--;
+        }
+        if (sums2.find(a[i]) != sums2.end()) indexes.insert(n-(i+1));
+    }
+
+    cout << sz(indexes) << endl;
 }
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout<<setprecision(15)<<fixed;
     int t=1;
-    // cin >> t;
+    cin >> t;
     for (int c = 0; c < t; c++)
     {   
         // cout<<"Case #"<<c+1<<": ";

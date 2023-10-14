@@ -49,19 +49,27 @@ typedef pair<int, int> pii;
 typedef vector<int> vi;
 typedef vector<ll> vl;
 
-const int MAXA = 1e7;
-vector<int> mind(MAXA+1);
-vector<int> primes;
-
 void solve(){
-    
+    int n, m;
+    string s,s2;
+    cin >> n >> m;
+    cin >> s;
+    cin >> s2;
+    rep2((int)ceil(log2(s.length()/s2.length()))){
+        s = s+s;
+    }
+    cout << 
+    if (s.find(s2) != string::npos) {
+        println((int)ceil(log2(s.length()/s2.length())));
+    }
+    println(-1);
 }
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout<<setprecision(15)<<fixed;
     int t=1;
-    // cin >> t;
+    cin >> t;
     for (int c = 0; c < t; c++)
     {   
         // cout<<"Case #"<<c+1<<": ";

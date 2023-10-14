@@ -49,11 +49,33 @@ typedef pair<int, int> pii;
 typedef vector<int> vi;
 typedef vector<ll> vl;
 
-const int MAXA = 1e7;
-vector<int> mind(MAXA+1);
-vector<int> primes;
-
 void solve(){
+    int n;
+    cin >> n;
+    vl a(n);
+    vl b(n);
+
+    rep2(n) cin >> a[i];
+    
+    rep2(n) cin >> b[i];
+    
+
+    vector<ll> diff(n);
+
+    rep2(n) diff[i] = a[i] - b[i];
+    sort (diff.begin(), diff.end());
+
+    ll counter = 0;
+    ll j = 0;
+
+    rep2(n)
+    {
+        if (diff[i] < 0) continue;
+        j = lower_bound(diff.begin(), diff.begin()+i, -diff[i]+1) - diff.begin();
+        counter += abs(i-j);
+
+    }
+    println(counter);
     
 }
 int main(){

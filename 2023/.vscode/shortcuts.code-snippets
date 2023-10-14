@@ -153,6 +153,9 @@
 			"typedef pair<int, int> pii;",
 			"typedef vector<int> vi;",
 			"typedef vector<ll> vl;",
+			"const int MAXA = 1e7;",
+			"vector<int> mind(MAXA+1);",
+			"vector<int> primes;",
 			"",
 			"void solve(){",
 			"	",
@@ -171,6 +174,23 @@
 			"}",
 		],
 		"description": "Start new CF project"
-	}
+	},
+	"primes":{
+		"scope":"cpp",
+		"prefix":"prime",
+		"body":[
+			"for (int i = 2; i <= MAXA; ++i) {",
+			"	if (mind[i] == 0) {",
+			"		primes.emplace_back(i);",
+			"		mind[i] = i;",
+			"	}",
+			"	for (auto &x : primes) {",
+			"		if (x > mind[i] || x * i > MAXA) break;",
+			"		mind[x * i] = x;",
+			"	}",
+			"}",
+		],
+		"description": "Add primes"
+	},
 }
 

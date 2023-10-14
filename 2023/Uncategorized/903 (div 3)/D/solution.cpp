@@ -49,19 +49,52 @@ typedef pair<int, int> pii;
 typedef vector<int> vi;
 typedef vector<ll> vl;
 
-const int MAXA = 1e7;
+const int MAXA = 1e6;
 vector<int> mind(MAXA+1);
 vector<int> primes;
 
 void solve(){
-    
+    int n;
+    cin >> n;
+    vi a(n);
+    rep2(n) cin >> a[i];
+    map<int, int> facs;
+    int eq = a[0];
+
+    rep2(n){
+        int m = mind[a[i]];
+        while (a[i] > 1){
+            a[i] /= m;
+            facs[m] += 1;
+            m = mind[a[i]];
+        }
+        if (a[i] != 1) facs[a[i]] += 1;
+    }
+
+    for(auto f: facs){
+        if (f.second % n != 0){
+            println("NO");
+            return;
+        }
+    }
+    println("YES");
 }
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout<<setprecision(15)<<fixed;
     int t=1;
-    // cin >> t;
+    cin >> t;
+     for (int i = 2; i <= MAXA; ++i) {
+        if (mind[i] == 0) {
+            primes.emplace_back(i);
+            mind[i] = i;
+        }
+        for (auto &x : primes) {
+            if (x > mind[i] || x * i > MAXA) break;
+            mind[x * i] = x;
+        }
+    }
     for (int c = 0; c < t; c++)
     {   
         // cout<<"Case #"<<c+1<<": ";

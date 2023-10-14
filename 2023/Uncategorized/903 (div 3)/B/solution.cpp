@@ -49,19 +49,48 @@ typedef pair<int, int> pii;
 typedef vector<int> vi;
 typedef vector<ll> vl;
 
-const int MAXA = 1e7;
-vector<int> mind(MAXA+1);
-vector<int> primes;
-
 void solve(){
-    
+    int a, b, c;
+    cin >> a >> b >>c ;
+    // if ((a+b+c) % 3 != 0) {
+    //     println("NO");
+    //     return;
+    // }
+    int moves = 3;
+    int minimum = min(min(a,b),c);
+    while(a != minimum){
+        if (moves == 0){
+            break;
+        }
+        a -= minimum;
+        moves--;
+    }
+    while(b != minimum){
+        if (moves == 0){
+            break;
+        }
+        b -= minimum;
+        moves--;
+    }
+    while(c != minimum){
+        if (moves == 0){
+            break;
+        }
+        c -= minimum;
+        moves--;
+    }
+    if (a == b && b == c){
+        println("YES");
+        return;
+    }
+    println("NO");
 }
 int main(){
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
     cout<<setprecision(15)<<fixed;
     int t=1;
-    // cin >> t;
+    cin >> t;
     for (int c = 0; c < t; c++)
     {   
         // cout<<"Case #"<<c+1<<": ";
