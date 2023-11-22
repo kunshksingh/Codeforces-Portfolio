@@ -1,0 +1,148 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <algorithm>
+#include <sstream>
+#include <queue>
+#include <deque>
+#include <bitset>
+#include <iterator>
+#include <list>
+#include <stack>
+#include <map>
+#include <set>
+#include <functional>
+#include <numeric>
+#include <utility>
+#include <limits>
+#include <time.h>
+#include <math.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <array>
+#include <unordered_map>
+#include <unordered_set>
+#include <iomanip>
+#include <chrono>
+#include <random>
+#include <climits>
+
+using namespace std;
+#pragma GCC optimize("Ofast")
+//#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,tune=native")
+#pragma GCC optimize("unroll-loops")
+
+#define rep(a, b) for(int i = a; i < (b); ++i)
+#define rep2(b) for(int i = 0; i < (b); ++i)
+#define all(x) begin(x), end(x)
+#define sz(x) (int)(x).size()
+#define pb(x) push_back(x)
+
+#define println(x) cout << x << endl;
+#define print(x) cout << x << " ";
+
+typedef long long ll;
+typedef long double ld;
+typedef pair<int, int> pii;
+typedef vector<int> vi;
+typedef vector<ll> vl;
+const int MAXA = 1e7;
+vector<int> mind(MAXA+1);
+vector<int> primes;
+void rotate(vi &a){
+    int temp = a[sz(a)-1];
+    for(int i = sz(a)-1; i > 0; i--) {
+        a[i] = a[i-1];
+    }
+    a[0] = temp;
+
+}
+void r_rotate(vi &a){
+    int temp = a[0];
+    for(int i = 0; i < sz(a)-1; i++) {
+        a[i] = a[i+1];
+    }
+    a[sz(a)-1] = temp;
+
+}
+int solve(){
+    int n;
+    cin >> n;
+    vi a(n);
+    vi b(n);
+    rep2(n) cin >> a[i];
+    rep2(n) cin >> b[i];
+    
+    for (int t = 0; t < n; t++)
+    {
+        bool goNext = false;
+        for (int i = 0; i < n/2; i++){
+            if (a[i] != b[n-i-1] || a[i] >= b[i]){
+                goNext = true;
+                break;
+            }
+        }
+        for (int i = n/2; i < n; i++){
+            if(goNext) break;
+            if (a[i] != b[n-i-1] || a[i] <= b[i]){
+                goNext = true;
+                break;
+            }
+        }
+        if(!goNext)return t;
+        r_rotate(b);
+        swap(a[0], b[n-1]);
+        r_rotate(a);
+        rep2(n) print(a[i]);
+        println("");
+        rep2(n) print(b[i]);
+        println("");
+        println("---");
+       
+        
+    }
+    for (int t = 0; t < n; t++)
+    {
+        bool goNext = false;
+        for (int i = 0; i < n/2; i++){
+            if (a[i] != b[n-i-1] || a[i] >= b[i]){
+                goNext = true;
+                break;
+            }
+        }
+        if (n % 2 == 1 && a[(n)/2] != b[(n)/2]) goNext = true;
+        for (int i = (n+1)/2; i < n; i++){
+            if(goNext) break;
+            if (a[i] != b[n-i-1] || a[i] <= b[i]){
+                goNext = true;
+                break;
+            }
+        }
+        if(!goNext)return t+n;
+        r_rotate(b);
+        swap(a[0], b[n-1]);
+        r_rotate(a);
+        rep2(n) print(a[i]);
+        println("");
+        rep2(n) print(b[i]);
+        println("");
+        println("---");
+       
+        
+    }
+    return -1;
+}
+int main(){
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout<<setprecision(15)<<fixed;
+    int t=1;
+    cin >> t;
+    for (int c = 0; c < t; c++)
+    {   
+        cout<<"Case #"<<c+1<<": ";
+        println(solve());
+    }
+}

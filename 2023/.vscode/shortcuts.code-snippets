@@ -192,5 +192,40 @@
 		],
 		"description": "Add primes"
 	},
+	"dsu":{
+		"scope":"cpp",
+		"prefix":"dsu",
+		"body":[
+			"struct dsu{",
+			"	int N;",
+			"	vector<int> p, s;",
+			"	dsu(int _n){",
+			"		N = _n + 5;",
+			"		p.resize(N); s.resize(N);",
+			"		iota(p.begin(), p.end(), 0);",
+			"		fill(s.begin(), s.end(), 1);",
+			"	}",
+			"	int size(int a){",
+			"		return s[find(a)];",
+			"	}",
+			"	int find(int a){",
+			"		if(p[a] == a) return a;",
+			"		p[a] = find(p[a]);",
+			"		return p[a];",
+			"	}",
+			"	bool unite(int a, int b){",
+			"		a = find(a), b = find(b);",
+			"		if(a == b) return false;",
+			"		if(s[a] > s[b]) swap(a, b);",
+			"		s[b] += s[a];",
+			"		p[a] = b;",
+			"		return true;",
+			"	}",
+			"	bool same(int a, int b){",
+			"		return find(a) == find(b);",
+			"	}",
+			"};",
+		]
+	}
 }
 

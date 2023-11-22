@@ -77,6 +77,14 @@
         "utility": "cpp",
         "variant": "cpp",
         "__verbose_abort": "cpp",
-        "climits": "cpp"
+        "climits": "cpp",
+        "filesystem": "cpp",
+        "forward_list": "cpp",
+        "regex": "cpp",
+        "span": "cpp",
+        "valarray": "cpp",
+        "format": "cpp",
+        "ranges": "cpp",
+        "stacktrace": "cpp"
     }
 }
