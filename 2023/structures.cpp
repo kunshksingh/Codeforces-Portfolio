@@ -246,3 +246,42 @@ std::pair<KeyType,ValueType> get_max( const std::map<KeyType,ValueType>& x ) {
 
 */
 
+/*
+TOP SORT
+void topologicalSortUtil(int v, const vector<vector<bool>> &adj, vector<bool> &visited, stack<int> &Stack) {
+    // Mark the current node as visited
+    visited[v] = true;
+
+    // Recur for all the vertices adjacent to this vertex
+    for (int i = 0; i < adj.size(); i++) {
+        if (adj[v][i] && !visited[i]) {
+            topologicalSortUtil(i, adj, visited, Stack);
+        }
+    }
+
+    // Push current vertex to stack which stores result
+    Stack.push(v);
+}
+
+void topologicalSort(const vector<vector<bool>> &adj) {
+    stack<int> Stack;
+    int V = adj.size();
+
+    // Mark all the vertices as not visited
+    vector<bool> visited(V, false);
+
+    // Call the recursive helper function to store topological sort starting from all vertices one by one
+    for (int i = 0; i < V; i++) {
+        if (!visited[i]) {
+            topologicalSortUtil(i, adj, visited, Stack);
+        }
+    }
+
+    // Print contents of stack
+    while (!Stack.empty()) {
+        cout << Stack.top() << " ";
+        Stack.pop();
+    }
+}
+
+*/
