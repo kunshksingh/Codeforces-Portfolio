@@ -15,6 +15,31 @@
 	// 	],
 	// 	"description": "Log output to console"
 	// }
+
+	"bfs":{
+		"scope":"cpp",
+		"prefix":"bfs",
+		"body":[
+			"const int MAX_N = 1e5 + 5;",
+			"int vis[MAX_N];",
+			"vector<int> adj[MAX_N];",
+	
+			"void bfs(int u) {",
+			"	queue<int> q;",
+			"	q.push(u);",
+			"	vis[u] = 1;",
+			"	while (!q.empty()) {",
+			"		int v = q.front(); q.pop();",
+			"		for (int w : adj[v]) {",
+			"			if (vis[w]) continue;",
+			"			vis[w] = 1;",
+			"			q.push(w);",
+			"		}",
+			"	}",
+			"}",
+		],
+		"description": "Make BFS"
+	},
 	"dfs":{
 		"scope":"cpp",
 		"prefix":"dfs",
@@ -140,7 +165,9 @@
 			"#pragma GCC optimize(\"unroll-loops\")",
 			"",
 			"#define rep(a, b) for(int i = a; i < (b); ++i)",
+			"#define rrep(a, b) for(int i = a; i > (b); --i)",
 			"#define rep2(b) for(int i = 0; i < (b); ++i)",
+			"#define rrep2(a) for(int i = a; i >= 0; --i)",
 			"#define all(x) begin(x), end(x)",
 			"#define sz(x) (int)(x).size()",
 			"#define pb(x) push_back(x)",
@@ -153,9 +180,6 @@
 			"typedef pair<int, int> pii;",
 			"typedef vector<int> vi;",
 			"typedef vector<ll> vl;",
-			"const int MAXA = 1e7;",
-			"vector<int> mind(MAXA+1);",
-			"vector<int> primes;",
 			"",
 			"void solve(){",
 			"	",
